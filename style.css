@@ -559,6 +559,9 @@ textarea.field{border-radius:18px;padding-top:15px;min-height:120px;resize:verti
     border-bottom:1px solid var(--line);box-shadow:var(--shadow);
     transform:translateY(-12px);opacity:0;pointer-events:none;transition:.28s ease;
   }
+  /* the panel's top is pinned to the unscrolled .nav height (82px), but the
+     header shrinks to 68px once scrolled — follow it so no gap opens up */
+  .site-header.scrolled + .mobile-panel{top:68px}
   .mobile-panel.open{transform:none;opacity:1;pointer-events:auto}
   .mobile-panel a{display:block;padding:15px 4px;border-bottom:1px solid var(--line);font-size:1.1rem;color:var(--espresso)}
   .mobile-panel a:last-of-type{border-bottom:0}
@@ -573,11 +576,21 @@ textarea.field{border-radius:18px;padding-top:15px;min-height:120px;resize:verti
   .hero-word{font-size:4.6rem}
   .hero-art{min-height:340px}
   .family-grid{grid-template-columns:1fr}
+  /* .family-grid.detailed (0,2,0) out-specifies the rule above, so restate it
+     at equal specificity — otherwise families.html stays 2-up on phones. */
+  .family-grid.detailed{grid-template-columns:1fr}
   .product-grid{grid-template-columns:1fr 1fr;gap:12px}
   .product-card{padding:14px 14px 18px}
   .product-card h3{font-size:1.02rem}
   .product-card .btn{min-height:44px;padding:0 12px;white-space:normal}
-  .family-card{min-height:0}
+  .family-card{min-height:0;padding:26px 22px}
+  .pro-future .family-card{padding:26px 22px}
+  /* .btn is nowrap by default; inside a 1fr track that sets the track's
+     min-content floor and pushes the grid past .container. */
+  .family-card .btn{white-space:normal;padding:0 16px}
+  /* the future-line pill is absolutely positioned with no max-width — put it
+     back in flow on phones so it can never escape or overlap the glyph */
+  .family-card .badge{position:static;align-self:flex-start;margin-bottom:14px}
   .family-items{gap:8px}
   .family-item{padding:10px 11px}
   .switches{grid-template-columns:1fr}
@@ -585,6 +598,10 @@ textarea.field{border-radius:18px;padding-top:15px;min-height:120px;resize:verti
   .story-card{min-width:74vw;scroll-snap-align:start}
   .waitlist{padding:36px 24px}
   .personal-panel,.contact-form-card{padding:28px 22px}
+  /* min-width:260px leaves no headroom in a 328px container */
+  .blog-search{min-width:0;width:100%}
+  /* match the 16px .container gutter instead of 20px */
+  .article{width:min(760px,calc(100% - 32px))}
   .page-hero{padding:96px 0 64px}
   .footer-bottom{flex-direction:column}
 }
@@ -596,7 +613,7 @@ textarea.field{border-radius:18px;padding-top:15px;min-height:120px;resize:verti
   .hero-word{font-size:4rem}
   /* keep every tappable control comfortable on the smallest phones */
   .btn{min-height:46px}
-  .chip{height:42px}
+  .chip{min-height:42px}
 }
 
 /* ---------- AMBIENT BACKGROUND LAYER (site-wide, decorative) ----------
@@ -688,7 +705,7 @@ main,footer{position:relative;z-index:1}
 .blog-search input{border:0;background:transparent;outline:none;width:100%;font-size:.94rem}
 .blog-filters{display:flex;gap:8px;flex-wrap:wrap}
 .chip{
-  display:inline-flex;align-items:center;gap:7px;height:40px;padding:0 16px;border-radius:999px;
+  display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:0 16px;border-radius:999px;
   border:1px solid var(--line);color:var(--taupe);cursor:pointer;font-size:.86rem;background:transparent;
   transition:.25s ease;
 }
@@ -793,8 +810,13 @@ figcaption{color:var(--clay);font-size:.82rem;text-align:center;margin-top:10px}
   .recipe-cols{grid-template-columns:1fr}
   .recipe-meta{grid-template-columns:1fr 1fr}
 }
-@media(max-width:600px){
+/* the bare .footer-grid listed in the 960px block above is out-ranked by
+   .site-footer .footer-grid (equal specificity, later in the file), so the
+   footer collapse has to be declared here, after that rule. */
+@media(max-width:960px){
   .site-footer .footer-grid{grid-template-columns:1fr;gap:34px}
+}
+@media(max-width:600px){
   .blog-grid{grid-template-columns:1fr}
   .blog-featured .feat-body{padding:30px 24px}
 }
@@ -802,3 +824,8 @@ figcaption{color:var(--clay);font-size:.82rem;text-align:center;margin-top:10px}
 .blog-grid.four{grid-template-columns:repeat(4,1fr)}
 @media(max-width:1000px){.blog-grid.four{grid-template-columns:1fr 1fr}}
 @media(max-width:600px){.blog-grid.four{grid-template-columns:1fr}}
+
+/* two-up variant (article galleries, related posts) — replaces inline
+   grid-template-columns, which no media query could override */
+.blog-grid.two{grid-template-columns:1fr 1fr}
+@media(max-width:600px){.blog-grid.two{grid-template-columns:1fr}}
